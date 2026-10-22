@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { request } from '../lib/bridge';
-import { formatBytes, loaderName } from '../lib/format';
+import { formatBytes, formatPercent, loaderName } from '../lib/format';
 import { navigate } from '../lib/router';
 import {
   closeModpackSheet,
@@ -152,7 +152,7 @@ export function ModpackSheet() {
             <div class="modpack-progress">
               <div class="modpack-progress__row">
                 <span>{job?.progress?.stageLabel ?? '正在准备'}</span>
-                <span class="mono">{Math.round(pct * 100)}%</span>
+                <span class="mono">{formatPercent(pct)}</span>
               </div>
               <ProgressBar value={pct} indeterminate={!job?.progress || job.progress.totalBytes <= 0} />
               <div class="modpack-progress__meta">

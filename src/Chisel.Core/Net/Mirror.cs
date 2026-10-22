@@ -15,8 +15,8 @@ public static class Mirror
         if (original.StartsWith("https://piston-meta.mojang.com/", StringComparison.OrdinalIgnoreCase))
             return Host + original["https://piston-meta.mojang.com".Length..];
 
-        if (original.StartsWith("https://piston-data.mojang.com/", StringComparison.OrdinalIgnoreCase))
-            return Host + original["https://piston-data.mojang.com".Length..];
+        // piston-data 不放镜像：BMCLAPI 只镜像 /v1/packages/ 下的 json（版本清单与资源索引），
+        // 按 sha1 寻址的 /v1/objects/（log4j 配置等）一律 404，挂上去只会白白耗尽重试次数。
 
         if (original.StartsWith("https://launcher.mojang.com/", StringComparison.OrdinalIgnoreCase))
             return Host + original["https://launcher.mojang.com".Length..];

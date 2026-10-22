@@ -15,6 +15,15 @@ export function formatSpeed(bytesPerSecond: number | null | undefined): string {
   return `${formatBytes(bytesPerSecond)}/s`;
 }
 
+/**
+ * 进度文字一律走这里：profile 里缺 size 的库条目会按 0 字节规划、按实际字节完成，
+ * 比值可能超过 1，进度条自己会钳制但文字不会，于是显示成 137%。
+ */
+export function formatPercent(ratio: number | null | undefined): string {
+  if (!ratio || !Number.isFinite(ratio) || ratio <= 0) return '0%';
+  return `${Math.round(Math.min(100, ratio * 100))}%`;
+}
+
 export function formatCount(value: number): string {
   if (value >= 100000000) return `${(value / 100000000).toFixed(1)} 亿`;
   if (value >= 10000) return `${(value / 10000).toFixed(value >= 100000 ? 0 : 1)} 万`;

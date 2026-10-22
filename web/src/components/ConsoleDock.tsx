@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { request } from '../lib/bridge';
-import { formatBytes, formatSpeed, parseLogLine } from '../lib/format';
+import { formatBytes, formatPercent, formatSpeed, parseLogLine } from '../lib/format';
 import {
   closeConsole,
   consoleOpen,
@@ -133,7 +133,7 @@ export function ConsoleDock() {
         {status?.state && status.state !== 'running' && status.state !== 'exited' && status.state !== 'failed' ? (
           <>
             <ProgressBar value={status.progress} thin />
-            <span>{Math.round(status.progress * 100)}%</span>
+            <span>{formatPercent(status.progress)}</span>
           </>
         ) : null}
         <span>{status?.message ?? '启动实例后，日志会显示在这里。'}</span>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { request } from '../lib/bridge';
-import { formatBytes, formatDate, formatSpeed, loaderName } from '../lib/format';
+import { formatBytes, formatDate, formatPercent, formatSpeed, loaderName } from '../lib/format';
 import { navigate } from '../lib/router';
 import {
   cancelInstallation,
@@ -297,7 +297,7 @@ export function InstallSheet() {
                 <span class="mono">
                   {running
                     ? progress
-                      ? `${Math.round(pct * 100)}%`
+                      ? formatPercent(pct)
                       : '···'
                     : done
                       ? '100%'

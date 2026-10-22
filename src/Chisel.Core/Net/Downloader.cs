@@ -87,7 +87,7 @@ public sealed class Downloader
         using var gate = new SemaphoreSlim(Math.Clamp(concurrency, 1, 32));
         var errors = new List<Exception>();
         var errorLock = new object();
-        var preferMirror = await SourceProbe.PreferMirrorAsync(_source, ct);
+        var hosts = await SourceProbe.ResolveAsync(_source, items, ct);
 
         var tasks = items.Select(async item =>
         {
@@ -95,7 +95,7 @@ public sealed class Downloader
             try
             {
                 onItem?.Invoke(item.Label);
-                await DownloadOneAsync(item, progress, preferMirror, ct);
+                await DownloadOneAsync(item, progress, hosts.PreferMirror(item), ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
             catch (Exception ex)
@@ -162,6 +162,7 @@ public sealed class Downloader
                         var buffer = new byte[131072];
                         long total = 0;
                         int read;
+                        var guard = new StallGuard();
                         while ((read = await HttpTransfer.ReadAsync(input, buffer, ct)) > 0)
                         {
                             await output.WriteAsync(buffer.AsMemory(0, read), ct);
@@ -169,6 +170,7 @@ public sealed class Downloader
                             total += read;
                             streamed += read;
                             progress.Stream(read);
+                            guard.Observe(total);
                         }
                         if (item.Size > 0 && total != item.Size)
                             throw new IOException($"大小不符（期望 {item.Size}，收到 {total}）");
@@ -187,6 +189,13 @@ public sealed class Downloader
                 {
                     try { if (File.Exists(temp)) File.Delete(temp); } catch { }
                     throw;
+                }
+                catch (SlowSourceException ex)
+                {
+                    last = ex;
+                    if (streamed != 0) progress.Stream(-streamed);
+                    try { if (File.Exists(temp)) File.Delete(temp); } catch { }
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -228,20 +237,42 @@ public sealed class Downloader
             {
                 var from = index * partSize;
                 var to = Math.Min(size - 1, from + partSize - 1);
+                var expected = to - from + 1;
                 var partPath = temp + ".seg" + index;
                 parts[index] = partPath;
-                using var response = await HttpTransfer.GetAsync(url, ct, from, to);
-                if (response.StatusCode != System.Net.HttpStatusCode.PartialContent)
-                    throw new IOException("服务器不支持分段下载");
-                await using var input = await response.Content.ReadAsStreamAsync(ct);
-                await using var output = new FileStream(partPath, FileMode.Create, FileAccess.Write, FileShare.None, 131072, true);
-                var buffer = new byte[131072];
-                int read;
-                while ((read = await HttpTransfer.ReadAsync(input, buffer, ct)) > 0)
+
+                // 上一轮失败时保留的分段可以接着用：同一个目标文件按字节区间寻址，
+                // 换源续传也是安全的，最后的 SHA-1 会兜底。
+                var have = File.Exists(partPath) ? new FileInfo(partPath).Length : 0;
+                if (have > expected)
                 {
-                    await output.WriteAsync(buffer.AsMemory(0, read), ct);
-                    Interlocked.Add(ref streamedTotal, read);
-                    progress.Stream(read);
+                    File.Delete(partPath);
+                    have = 0;
+                }
+
+                if (have < expected)
+                {
+                    using var response = await HttpTransfer.GetAsync(url, ct, from + have, to);
+                    if (response.StatusCode != System.Net.HttpStatusCode.PartialContent)
+                        throw new IOException("服务器不支持分段下载");
+                    await using var input = await response.Content.ReadAsStreamAsync(ct);
+                    await using var output = new FileStream(partPath,
+                        have > 0 ? FileMode.Open : FileMode.Create, FileAccess.Write, FileShare.None, 131072, true);
+                    if (have > 0) output.Seek(have, SeekOrigin.Begin);
+                    var buffer = new byte[131072];
+                    long partTotal = have;
+                    int read;
+                    var guard = new StallGuard();
+                    while ((read = await HttpTransfer.ReadAsync(input, buffer, ct)) > 0)
+                    {
+                        await output.WriteAsync(buffer.AsMemory(0, read), ct);
+                        partTotal += read;
+                        Interlocked.Add(ref streamedTotal, read);
+                        progress.Stream(read);
+                        guard.Observe(partTotal);
+                    }
+
+                    if (partTotal < expected) throw new IOException("分段提前断流");
                 }
             }).ToList();
 
@@ -261,27 +292,74 @@ public sealed class Downloader
             if (!string.IsNullOrEmpty(item.Sha1) && !await HashMatchesAsync(temp, item.Sha1, ct))
                 throw new IOException("SHA-1 不符");
 
+            DeleteParts(parts);
             return streamedTotal;
+        }
+        catch (SlowSourceException)
+        {
+            // 慢源要往上抛，让调用方换下一个地址；保留分段，下一个源从已有字节续传，
+            // 而不是把 20 多 MB 直接丢掉重来。
+            if (streamedTotal > 0) progress.Stream(-streamedTotal);
+            throw;
         }
         catch
         {
             if (streamedTotal > 0) progress.Stream(-streamedTotal);
             try { if (File.Exists(temp)) File.Delete(temp); } catch { }
-            foreach (var part in parts)
-            {
-                if (string.IsNullOrEmpty(part)) continue;
-                try { if (File.Exists(part)) File.Delete(part); } catch { }
-            }
+            DeleteParts(parts);
             return -1;
         }
-        finally
+    }
+
+    private static void DeleteParts(IReadOnlyList<string?> parts)
+    {
+        foreach (var part in parts)
         {
-            foreach (var part in parts)
-            {
-                if (string.IsNullOrEmpty(part)) continue;
-                try { if (File.Exists(part)) File.Delete(part); } catch { }
-            }
+            if (string.IsNullOrEmpty(part)) continue;
+            try { if (File.Exists(part)) File.Delete(part); } catch { }
         }
+    }
+
+    /// <summary>
+    /// 能连上但只有几 KB/s 的源必须被放弃：IdleTimeout 要 60 秒收不到任何字节才触发，
+    /// 涓流式慢速永远绕得过它，一个 23 MB 的库能挂一个小时。连续两个窗口都慢、
+    /// 且整段均值也慢才判死，避免误杀刚起步的连接。
+    /// </summary>
+    private sealed class StallGuard
+    {
+        private const int WindowMs = 5000;
+        private const double FloorBytesPerSecond = 24 * 1024;
+
+        private readonly Stopwatch _watch = Stopwatch.StartNew();
+        private long _windowStartMs;
+        private long _windowStartBytes;
+        private int _slowWindows;
+
+        public void Observe(long totalBytes)
+        {
+            var now = _watch.ElapsedMilliseconds;
+            var elapsed = now - _windowStartMs;
+            if (elapsed < WindowMs) return;
+
+            var rate = (totalBytes - _windowStartBytes) * 1000.0 / elapsed;
+            _windowStartMs = now;
+            _windowStartBytes = totalBytes;
+            if (rate >= FloorBytesPerSecond)
+            {
+                _slowWindows = 0;
+                return;
+            }
+
+            var overall = now > 0 ? totalBytes * 1000.0 / now : 0;
+            if (overall < FloorBytesPerSecond && ++_slowWindows >= 2)
+                throw new SlowSourceException($"下载速度过低（{rate / 1024:F0} KB/s）");
+        }
+    }
+
+    /// <summary>源活着但太慢：同一条地址上重试没有意义，直接换下一个源。</summary>
+    private sealed class SlowSourceException : IOException
+    {
+        public SlowSourceException(string message) : base(message) { }
     }
 
     private IReadOnlyList<string> BuildUrls(DownloadItem item, bool preferMirror)

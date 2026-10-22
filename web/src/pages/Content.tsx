@@ -4,6 +4,7 @@ import { request } from '../lib/bridge';
 import {
   formatBytes,
   formatCount,
+  formatPercent,
   formatShortDate,
   loaderName,
   projectTypeName
@@ -530,7 +531,7 @@ export function ContentPage() {
                       <div class="content-job__line">
                         <span>{job.title || '正在安装'}</span>
                         <span class="mono">
-                          {progress ? `${Math.round(pct * 100)}%` : '···'}
+                          {progress ? formatPercent(pct) : '···'}
                         </span>
                       </div>
                       <ProgressBar value={pct} thin indeterminate={!progress || progress.totalBytes <= 0} />

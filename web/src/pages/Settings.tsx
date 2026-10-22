@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { onEvent, request } from '../lib/bridge';
 import {
   formatBytes,
+  formatPercent,
   loaderName
 } from '../lib/format';
 import {
@@ -428,7 +429,7 @@ export function SettingsPage() {
                   <span class="java-progress__actions">
                     <span class="mono">
                       {progress.totalBytes > 0
-                        ? `${Math.round((progress.receivedBytes / progress.totalBytes) * 100)}%`
+                        ? formatPercent(progress.receivedBytes / progress.totalBytes)
                         : '···'}
                     </span>
                     <button

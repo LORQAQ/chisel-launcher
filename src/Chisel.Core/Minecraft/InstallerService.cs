@@ -240,8 +240,7 @@ public sealed class InstallerService
                     try
                     {
                         var label = Volatile.Read(ref current);
-                        if (!string.IsNullOrEmpty(label))
-                            Report("libraries", "下载运行库", label, progress.BytesPerSecond);
+                        Report("libraries", "下载运行库", label ?? "排队中", progress.BytesPerSecond);
                         await Task.Delay(180, tickerCts.Token);
                     }
                     catch (OperationCanceledException) { break; }
@@ -259,6 +258,9 @@ public sealed class InstallerService
                 try { await ticker; } catch { }
             }
 
+            // 上一批最后启动的那个文件会留在 current 里；不清掉的话，
+            // 资源阶段一开始界面就显示还停在库文件名上，看着像卡死。
+            Volatile.Write(ref current, null);
             Report("assets", "下载资源文件", "准备素材索引");
             using var assetTickerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             var assetTicker = Task.Run(async () =>
@@ -268,7 +270,7 @@ public sealed class InstallerService
                     try
                     {
                         var label = Volatile.Read(ref current);
-                        Report("assets", "下载资源文件", label, progress.BytesPerSecond);
+                        Report("assets", "下载资源文件", label ?? "排队中", progress.BytesPerSecond);
                         await Task.Delay(180, assetTickerCts.Token);
                     }
                     catch (OperationCanceledException) { break; }
@@ -365,6 +367,7 @@ public sealed class InstallerService
 
                 if (loaderItems.Count > 0)
                 {
+                    Volatile.Write(ref current, null);
                     using var loaderTickerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
                     var loaderTicker = Task.Run(async () =>
                     {
@@ -373,8 +376,8 @@ public sealed class InstallerService
                             try
                             {
                                 var label = Volatile.Read(ref current);
-                                if (!string.IsNullOrEmpty(label))
-                                    Report("loader", $"正在补齐 {LoaderLabel(loader)} 运行库", label, progress.BytesPerSecond);
+                                Report("loader", $"正在补齐 {LoaderLabel(loader)} 运行库",
+                                    label ?? "核对安装器留下的文件", progress.BytesPerSecond);
                                 await Task.Delay(180, loaderTickerCts.Token);
                             }
                             catch (OperationCanceledException) { break; }
