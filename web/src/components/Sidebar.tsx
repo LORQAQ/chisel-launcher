@@ -24,7 +24,7 @@ export function Sidebar() {
   const runningCard = running.value.instanceId
     ? instances.value.find((card) => card.instance.id === running.value.instanceId)
     : null;
-  const version = appInfo.value?.version ?? '0.1.0';
+  const version = appInfo.value?.version ?? '0.1.1';
 
   return (
     <aside class="rail">

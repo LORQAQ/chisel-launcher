@@ -633,7 +633,7 @@ export function createMock(emit: Emit) {
     app: {
       name: '凿境',
       codename: 'CHISEL',
-      version: '0.1.0',
+      version: '0.1.1',
       dataRoot: ROOT,
       logsDir: `${ROOT}\\logs`
     },

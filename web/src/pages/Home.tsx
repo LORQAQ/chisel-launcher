@@ -368,7 +368,7 @@ export function HomePage() {
           </section>
 
           <div class="side-foot">
-            <span>凿境 {appInfo.value?.version ?? '0.1.0'}</span>
+            <span>凿境 {appInfo.value?.version ?? '0.1.1'}</span>
             <span>非官方启动器</span>
           </div>
         </aside>

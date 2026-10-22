@@ -674,7 +674,7 @@ export function SettingsPage() {
 
             <div class="about-mark">
               <div class="about-mark__name serif">凿境</div>
-              <div class="about-mark__meta mono">CHISEL · v{appInfo.value?.version ?? '0.1.0'}</div>
+              <div class="about-mark__meta mono">CHISEL · v{appInfo.value?.version ?? '0.1.1'}</div>
               <p>
                 从游戏版本、账号、内容到日志，都放在同一个地方。
                 没有账号墙，没有广告，也不替你决定怎么玩。
@@ -739,7 +739,7 @@ export function SettingsPage() {
 
       <footer class="page-foot">
         <div class="page-foot__group">
-          <span>CHISEL {appInfo.value?.version ?? '0.1.0'}</span>
+          <span>CHISEL {appInfo.value?.version ?? '0.1.1'}</span>
           <span>Made for the quiet hours</span>
         </div>
         <div class="page-foot__group">
