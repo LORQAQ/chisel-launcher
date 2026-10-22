@@ -1,0 +1,137 @@
+name: Windows 构建与发布
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '产物版本号，例如 0.1.0；留空则记为 0.0.0-dev'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+
+jobs:
+  build:
+    name: 构建 Windows x64 版
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: 安装前端依赖
+        run: npm ci
+        working-directory: web
+
+      - name: 构建界面
+        run: npm run build
+        working-directory: web
+
+      - name: 准备 .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: 解析版本号
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            version="${GITHUB_REF#refs/tags/v}"
+          else
+            version="${{ inputs.version }}"
+            version="${version:-0.0.0-dev}"
+          fi
+          echo "CHISEL_VERSION=$version" >> "$GITHUB_ENV"
+          echo "产物版本：$version"
+
+      - name: 发布自包含单目录版本
+        run: >
+          dotnet publish src/Chisel.App -c Release -r win-x64 --self-contained true
+          -p:Version=$CHISEL_VERSION -p:DebugType=none -p:ErrorOnDuplicatePublishOutputFiles=false
+          -o out
+
+      - name: 确认界面资源已进包
+        shell: pwsh
+        run: |
+          if (-not (Test-Path out/wwwroot/index.html)) { throw "out/wwwroot/index.html 缺失，界面没有被打包" }
+          if (-not (Test-Path out/Chisel.exe)) { throw "out/Chisel.exe 缺失" }
+          "{0:N1} MB 发布目录" -f ((Get-ChildItem out -Recurse | Measure-Object Length -Sum).Sum / 1MB)
+
+      - name: 压缩
+        shell: pwsh
+        run: Compress-Archive -Path out/* -DestinationPath "chisel-$env:CHISEL_VERSION-win-x64.zip" -CompressionLevel Optimal
+
+      - name: 计算 SHA256
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash "chisel-$env:CHISEL_VERSION-win-x64.zip" -Algorithm SHA256).Hash.ToLower()
+          Set-Content -Path sha256.txt -Value $hash -NoNewline
+          Write-Host "SHA256: $hash"
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-${{ env.CHISEL_VERSION }}-win-x64
+          path: |
+            chisel-*.zip
+            sha256.txt
+          if-no-files-found: error
+
+      - name: 创建 Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          zip="chisel-${CHISEL_VERSION}-win-x64.zip"
+          {
+            echo "解压后运行 \`Chisel.exe\`，免安装。自包含，不需要额外装 .NET 运行时；"
+            echo "需要 WebView2 运行时（Windows 11 自带，Windows 10 缺失时会自动提示安装）。"
+            echo
+            echo "## 这个版本包含什么"
+            echo
+            echo "- 实例隔离：存档、模组、配置各归各的 \`instances/<id>/game\`，版本与库跨实例共享"
+            echo "- 加载器：原版 / Fabric / Quilt / Forge / NeoForge / OptiFine 无人值守安装"
+            echo "- 整合包：\`.mrpack\` 与 CurseForge \`manifest.zip\` 导入，含 overrides"
+            echo "- 内容：Modrinth 搜索安装更新、CurseForge 链接安装、Iris / OptiFine 光影前置准备"
+            echo "- 账号：微软设备码登录、离线账号、authlib-injector 外置登录（令牌 DPAPI 本地加密）"
+            echo "- 下载：Mojang 与 BMCLAPI 延迟探测自适应，大文件分片并发，逐个校验 SHA1"
+            echo "- Java：扫描常见安装位置、注册表与其他启动器内置运行时，缺失可后台下载"
+            echo
+            echo "## 文件校验"
+            echo
+            echo '```'
+            echo "$zip"
+            echo "sha256  $(cat sha256.txt)"
+            echo '```'
+            echo
+            echo "本程序未做代码签名，首次运行 Windows SmartScreen 可能提示“已保护你的电脑”，"
+            echo "点“更多信息 → 仍要运行”即可。源码与构建流程见本仓库的"
+            echo "[\`windows-release.yml\`](../blob/main/.github/workflows/windows-release.yml)。"
+            echo
+            echo "凿境是社区开源项目，与 Mojang / Microsoft 无关联，不含任何游戏资产，"
+            echo "使用需自行遵守 [Minecraft EULA](https://www.minecraft.net/zh-hans/eula)。"
+          } > release-notes.md
+          gh release create "$GITHUB_REF_NAME" "$zip" \
+            --title "凿境 CHISEL v${CHISEL_VERSION}" \
+            --notes-file release-notes.md \
+            --latest

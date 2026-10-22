@@ -47,6 +47,10 @@ Forge / NeoForge 走官方安装器（`--installClient`），OptiFine 用嵌入�
   <img src="docs/assets/screenshots/content.png" alt="内容页：Modrinth / CurseForge 来源切换与已装模组开关" width="440">
 </p>
 
+## 下载
+
+去 [Releases](https://github.com/LORQAQ/chisel-launcher/releases/latest) 下载 `chisel-<版本>-win-x64.zip`，解压后运行 `Chisel.exe`。自包含，不需要另装 .NET；需要 WebView2 运行时（Windows 11 自带）。程序未做代码签名，首次运行 SmartScreen 可能拦一下，点“更多信息 → 仍要运行”。每个 Release 正文里附了该 zip 的 SHA256。
+
 ## 构建
 
 需要 .NET 8 SDK、Node.js 18+，以及 Windows。界面是独立的前端，构建产物会被 .NET 项目当资源拷进去，所以顺序不能反。
@@ -147,4 +151,6 @@ CHISEL is a Minecraft Java Edition launcher for Windows, built on .NET 8 + WebVi
 - **Faster downloads.** Latency probe between Mojang and BMCLAPI cached for 10 minutes, HTTP/2 connection pooling, segmented Range downloads for files ≥ 8 MB, concurrency up to 32.
 - **Accounts.** Microsoft device-code sign-in with the code prefilled in the browser, offline profiles, and authlib-injector third-party login. Tokens are encrypted with Windows DPAPI and never leave the machine. No telemetry, no bundled game files.
 
-Build: `npm run build` in `web/`, then `dotnet build src/Chisel.App -c Release`.
+Download: grab the self-contained `win-x64` zip from [Releases](https://github.com/LORQAQ/chisel-launcher/releases/latest) — each release lists its SHA256. Unsigned, so expect a SmartScreen prompt on first run.
+
+Build: `npm run build` in `web/`, then `dotnet build src/Chisel.App -c Release`. Tagging `v*` triggers the Windows workflow in `.github/workflows/windows-release.yml`, which publishes and attaches the zip to a release.
