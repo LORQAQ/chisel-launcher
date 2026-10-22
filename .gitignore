@@ -1,0 +1,32 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+artifacts/
+publish/
+
+# Node / Vite
+node_modules/
+web/dist/
+*.local
+.vite/
+
+# 运行期数据（账号令牌、下载缓存、日志）
+data/
+portable.txt
+*.log
+
+# 本地验证与截图（含 WebView2 用户资料目录）
+.shots/
+.scratch/
+vibe_images/
+
+# 编辑器与系统
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store

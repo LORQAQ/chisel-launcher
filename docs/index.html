@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>凿境 CHISEL · Minecraft Java 版启动器</title>
+<meta name="description" content="凿境 CHISEL 是 Windows 上的开源 Minecraft Java 版启动器：实例互相隔离，官方源与 BMCLAPI 自适应下载，支持 Fabric、Quilt、Forge、NeoForge、OptiFine、.mrpack 与 CurseForge 整合包、authlib-injector 外置登录。">
+<meta name="theme-color" content="#16181c">
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/icon-256.png">
+<link rel="canonical" href="https://lorqaq.github.io/chisel-launcher/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="凿境 CHISEL · Minecraft Java 版启动器">
+<meta property="og:description" content="实例真正隔离的开源 Minecraft 启动器。官方源与 BMCLAPI 自适应下载，Forge / NeoForge / OptiFine / 整合包一条路径装完。">
+<meta property="og:image" content="https://lorqaq.github.io/chisel-launcher/assets/screenshots/home.png">
+<meta property="og:url" content="https://lorqaq.github.io/chisel-launcher/">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#features">跳到主要内容</a>
+
+<header class="topbar">
+  <div class="wrap topbar__in">
+    <a class="brand" href="./">
+      <img src="assets/img/logo.svg" alt="" width="30" height="30">
+      <span class="brand__name">凿境</span>
+      <span class="brand__sub">CHISEL</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a href="#features">功能</a>
+      <a href="#gallery">界面</a>
+      <a href="#download">下载</a>
+      <a href="#privacy">隐私</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+    <a class="btn btn--ghost topbar__gh" href="https://github.com/LORQAQ/chisel-launcher">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38l-.01-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
+      GitHub
+      <span class="stars" id="stars" hidden></span>
+    </a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">非官方启动器 · Windows · MIT 开源</p>
+    <h1>凿境 <span>CHISEL</span></h1>
+    <p class="lede">
+      一个把实例真正分开的 Minecraft Java 版启动器。存档、模组、配置各归各的目录；
+      下载在 Mojang 官方源和 BMCLAPI 之间自动挑快的那个；Fabric、Forge、NeoForge、
+      OptiFine 和整合包都在同一条路径里装完。
+    </p>
+    <div class="cta">
+      <a class="btn btn--primary" href="https://github.com/LORQAQ/chisel-launcher/releases">下载 Windows 版</a>
+      <a class="btn" href="https://github.com/LORQAQ/chisel-launcher">查看源码</a>
+      <a class="btn btn--text" href="#build">从源码构建 →</a>
+    </div>
+    <p class="meta"><span>v0.1.0</span><span>.NET 8 + WebView2</span><span>免安装</span><span>无遥测</span></p>
+
+    <figure class="shot">
+      <img src="assets/screenshots/home.png" alt="凿境首页：继续游玩列表、实例图标网格、右侧账号与版本动态" width="1440" height="900" loading="eager">
+      <figcaption>首页 · 继续游玩、实例网格、账号与版本动态</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="strip">
+  <div class="wrap strip__in">
+    <div class="strip__logos" aria-label="支持的加载器">
+      <span class="ltile"><img src="assets/img/loaders/vanilla.png" alt="原版" title="原版"></span>
+      <span class="ltile"><img src="assets/img/loaders/fabric.png" alt="Fabric" title="Fabric"></span>
+      <span class="ltile"><img src="assets/img/loaders/quilt.svg" alt="Quilt" title="Quilt"></span>
+      <span class="ltile"><img src="assets/img/loaders/forge.svg" alt="Forge" title="Forge"></span>
+      <span class="ltile" style="--a:#e0703e" title="NeoForge">N</span>
+      <span class="ltile" style="--a:#8c9bb5" title="OptiFine">O</span>
+    </div>
+    <p>原版 · Fabric · Quilt · Forge · NeoForge · OptiFine，外加 <code>.mrpack</code> 与 CurseForge 整合包</p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>它解决什么</h2>
+    <p class="section-lede">每一条都对应代码里能翻到的东西，不是宣传词。</p>
+    <dl class="feats">
+      <div class="feat">
+        <dt><i>01</i>实例隔离</dt>
+        <dd>
+          <p>一个实例一个目录：<code>instances/&lt;id&gt;/game</code> 放存档、模组、日志和崩溃报告。
+          版本 JSON、libraries、assets 放在 <code>shared/</code> 里跨实例共享，不重复占盘。删除实例送进回收站。</p>
+          <p class="feat__note">1.20.1 的 Fabric 和 1.21.4 的 Forge 不会互相踩到 mods 文件夹。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>02</i>下载加速</dt>
+        <dd>
+          <p>对 Mojang 与 BMCLAPI 做延迟探测，结果缓存 10 分钟；镜像在官方 1.25 倍延迟以内就走镜像。
+          ≥ 8 MB 的文件按 Range 分片并发下载，HTTP/2 连接池开到 128。并发默认 16，可调到 32。</p>
+          <p class="feat__note">每个文件下载后校验 SHA1 与大小，不匹配就重下。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>03</i>加载器安装</dt>
+        <dd>
+          <p>Fabric / Quilt 走官方 profile 接口；Forge 优先跑官方安装器（<code>--installClient</code>），
+          失败回退 BMCLAPI；NeoForge 安装器里的 maven 地址重写到镜像；OptiFine 用无头入口调用它自己的
+          <code>optifine.Installer.doInstall()</code>。</p>
+          <p class="feat__note">装完的 profile 和库与手动安装一致，可以直接被别的启动器认出来。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>04</i>整合包</dt>
+        <dd>
+          <p>选一个 <code>.mrpack</code> 或 CurseForge 的 zip，先看清单再装：文件数、加载器、游戏版本、体积。
+          Modrinth 文件走 CDN 直连，CurseForge 文件先解析出下载地址再下载，
+          <code>overrides/</code> 与 <code>client-overrides/</code> 原样落盘。</p>
+          <p class="feat__note">导入后仍能逐个更新模组。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>05</i>账号与登录</dt>
+        <dd>
+          <p>微软设备码登录：代码自动复制、浏览器直接带着 <code>otc=</code> 打开，只剩点两下。
+          也支持离线账号，以及 authlib-injector 外置登录（自动拉取 injector 与服务器元数据，注入
+          <code>-javaagent</code>）。</p>
+          <p class="feat__note">令牌用 Windows DPAPI（当前用户）加密后存在本地，凿境没有服务端。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>06</i>Java 管理</dt>
+        <dd>
+          <p>扫描 10 多个常见安装位置、注册表项，以及其他启动器和 Microsoft Store 包里的内置运行时，
+          按位数与主版本挑合适的那个。目标版本缺失时可以后台下载一份。</p>
+          <p class="feat__note">1.20.1 有 Java 21 也算够用，不会被误报成缺失。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>07</i>内容与光影</dt>
+        <dd>
+          <p>Modrinth 搜索、安装、更新、启停；CurseForge 链接安装。想装光影时会自动准备前置：
+          Fabric 系装 Iris，OptiFine 系直接放 shaderpacks。</p>
+          <p class="feat__note">内容按实例记录在 <code>.chisel-content.json</code>，卸载只删自己装的文件。</p>
+        </dd>
+      </div>
+      <div class="feat">
+        <dt><i>08</i>启动细节</dt>
+        <dd>
+          <p>按官方规则求值生成 JVM 与游戏参数，PerMonitorV2 高 DPI，自定义分辨率、启动后关窗、
+          日志面板与崩溃记录分析，每个实例还能单独设内存、参数和图标。</p>
+          <p class="feat__note">2K / 4K 屏上界面不会糊。</p>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section id="gallery" class="gallery">
+  <div class="wrap">
+    <h2>界面</h2>
+    <p class="section-lede">三张真实截图，都是当前版本的样子。</p>
+    <div class="tabs" role="tablist" aria-label="界面截图">
+      <button role="tab" id="tab-versions" aria-controls="pane-versions" aria-selected="true" data-shot="assets/screenshots/versions.png">实例</button>
+      <button role="tab" id="tab-content" aria-controls="pane-content" aria-selected="false" data-shot="assets/screenshots/content.png">内容</button>
+      <button role="tab" id="tab-settings" aria-controls="pane-settings" aria-selected="false" data-shot="assets/screenshots/settings.png">设置</button>
+    </div>
+    <figure class="shot shot--sm" id="pane-versions" role="tabpanel" aria-labelledby="tab-versions">
+      <img src="assets/screenshots/versions.png" alt="实例页：搜索框、加载器筛选、实例图标网格与导入整合包入口" width="1440" height="900" loading="lazy">
+      <figcaption>实例页 · 搜索、加载器筛选、导入整合包，底部统计占用</figcaption>
+    </figure>
+    <figure class="shot shot--sm" id="pane-content" role="tabpanel" aria-labelledby="tab-content" hidden>
+      <img src="assets/screenshots/content.png" alt="内容页：Modrinth 与 CurseForge 来源切换、已装模组列表与开关" width="1440" height="900" loading="lazy">
+      <figcaption>内容页 · 切换实例与来源，已装模组可开关、更新、删除</figcaption>
+    </figure>
+    <figure class="shot shot--sm" id="pane-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <img src="assets/screenshots/settings.png" alt="设置页：下载来源与并发、内存、Java 运行时、账号与界面设置" width="1440" height="900" loading="lazy">
+      <figcaption>设置页 · 下载、内存、Java 运行时、账号与界面</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2>下载</h2>
+    <div class="dl">
+      <div class="dl__main">
+        <h3>Windows 10 / 11 · x64</h3>
+        <p>免安装，解压后运行 <code>Chisel.exe</code>。需要 WebView2 运行时（Windows 11 自带，Win10 若缺失会提示安装）。
+        程序未做代码签名，首次运行 SmartScreen 可能拦一下，选“仍要运行”即可。</p>
+        <div class="dl__btns">
+          <a class="btn btn--primary" href="https://github.com/LORQAQ/chisel-launcher/releases/latest">获取最新版本</a>
+          <a class="btn" href="https://github.com/LORQAQ/chisel-launcher/releases">全部版本与更新记录</a>
+        </div>
+      </div>
+      <div class="dl__side">
+        <h4>最低要求</h4>
+        <ul class="ticks">
+          <li>Windows 10 1803 或更高</li>
+          <li>4 GB 可用内存（游戏本身另算）</li>
+          <li>磁盘取决于装多少个版本与整合包</li>
+          <li>正版登录需要 Minecraft Java 版账号</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 id="build" class="build-h">从源码构建</h3>
+    <p class="build-p">界面是独立前端，构建产物会被 .NET 项目当资源拷进去，所以顺序不能反。</p>
+    <pre><code><span class="c"># 1. 界面（Node.js 18+）</span>
+git clone https://github.com/LORQAQ/chisel-launcher.git
+cd chisel-launcher/web && npm install && npm run build
+
+<span class="c"># 2. 主程序（.NET 8 SDK）</span>
+cd .. && dotnet build src/Chisel.App -c Release
+<span class="c"># 产物：src/Chisel.App/bin/Release/net8.0-windows/Chisel.exe</span></code></pre>
+  </div>
+</section>
+
+<section id="privacy" class="privacy">
+  <div class="wrap">
+    <h2>隐私与安全</h2>
+    <div class="grid2">
+      <ul class="ticks">
+        <li><b>不打包游戏文件。</b>Minecraft 的客户端、库和资产全部按官方 manifest 现场下载，逐个校验 SHA1 与大小。</li>
+        <li><b>没有服务端，没有遥测。</b>设置、账号、日志都只写在本地数据目录里。</li>
+        <li><b>令牌本地加密。</b>账号令牌用 Windows DPAPI（当前用户）保护，换一台机器或换一个用户都解不开。</li>
+      </ul>
+      <ul class="ticks">
+        <li><b>下载域名收敛在白名单。</b>Mojang、BMCLAPI、Modrinth CDN、CurseForge CDN、Forge/NeoForge Maven、authlib-injector 发布地址。</li>
+        <li><b>文件写入有边界。</b>路径穿越检查、实例目录之外拒绝打开；WebView2 默认拒绝权限请求与自动下载。</li>
+        <li><b>微软登录用自己的 Azure 客户端 ID。</b>设置页可填，密码只输入在微软的页面上。</li>
+      </ul>
+    </div>
+    <p class="paths">数据默认在 <code>%APPDATA%\Chisel\</code>；程序目录放一个 <code>portable.txt</code> 或带 <code>--portable</code> 启动，就全落在 <code>data/</code> 里。也可用 <code>CHISEL_DATA_DIR</code> 指定。</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>常见问题</h2>
+    <details>
+      <summary>用第三方启动器会被封号吗？</summary>
+      <p>不会。凿境走的是微软官方验证接口和正版登录流程，不绕过授权、不修改验证逻辑。它只是不是 Mojang 官方出的那个客户端而已。</p>
+    </details>
+    <details>
+      <summary>下载还是很慢，怎么办？</summary>
+      <p>设置 → 下载里把来源从“自动”改成“BMCLAPI”试试；并发默认 16，网络好可以拉到 32。日志面板能看到每个文件实际命中的域名，方便判断是镜像问题还是本地网络问题。</p>
+    </details>
+    <details>
+      <summary>CurseForge 为什么要 API Key？</summary>
+      <p>整合包导入和文件解析用的是 CurseForge 公开元数据接口，能免 Key 工作，但限速比较紧。想要稳定的搜索体验，就在设置里填一个自己申请的 Key（CurseForge 免费提供）。</p>
+    </details>
+    <details>
+      <summary>支持 Linux 或 macOS 吗？</summary>
+      <p>目前只有 Windows，因为外壳是 WinForms。内核 <code>Chisel.Core</code> 不依赖 Windows 图形栈，把 DPAPI 换成别的加密后端后可以移植，欢迎来开 issue 讨论。</p>
+    </details>
+    <details>
+      <summary>为什么用 WebView2 而不是原生控件？</summary>
+      <p>为了把精力放在启动器逻辑而不是自绘控件上，同时保住较小的安装包和内存占用——它不是 Electron，渲染进程是系统里的 Edge。启动时只做列表读取，实例体积扫描延后到空闲时才跑。</p>
+    </details>
+    <details>
+      <summary>能不能直接用别的启动器的游戏文件？</summary>
+      <p>凿境按自己的目录结构管理共享库与资产，不会去改写别的启动器的目录。想把存档搬过来，直接把 <code>saves</code> 复制到实例的 <code>game</code> 目录就行。</p>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="foot__brand">
+      <img src="assets/img/logo.svg" alt="" width="28" height="28">
+      <div>
+        <b>凿境 / CHISEL</b>
+        <span>Minecraft Java 版启动器 · v0.1.0</span>
+      </div>
+    </div>
+    <nav class="foot__links" aria-label="页脚导航">
+      <a href="https://github.com/LORQAQ/chisel-launcher">GitHub</a>
+      <a href="https://github.com/LORQAQ/chisel-launcher/releases">下载</a>
+      <a href="https://github.com/LORQAQ/chisel-launcher/blob/main/README.md">文档</a>
+      <a href="https://github.com/LORQAQ/chisel-launcher/issues">反馈</a>
+    </nav>
+    <p class="foot__disc">
+      本项目为社区开源作品，以 MIT 许可发布，与 Mojang 或 Microsoft 均无关联。
+      Minecraft 是 Mojang AB 的商标。本站不含任何游戏资产，使用本软件需自行遵守
+      <a href="https://www.minecraft.net/zh-hans/eula">Minecraft 最终用户许可协议</a>。
+    </p>
+    <p class="foot__host">由 GitHub Pages 提供</p>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

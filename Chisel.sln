@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CD339CA0-ABFE-4B9A-A392-2454CDF6013D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chisel.Core", "src\Chisel.Core\Chisel.Core.csproj", "{F4D62405-684A-4FDE-87EB-22DC1F66025A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chisel.App", "src\Chisel.App\Chisel.App.csproj", "{99AF8341-8259-4265-BAA6-BD97C600EB33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4D62405-684A-4FDE-87EB-22DC1F66025A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D62405-684A-4FDE-87EB-22DC1F66025A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4D62405-684A-4FDE-87EB-22DC1F66025A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D62405-684A-4FDE-87EB-22DC1F66025A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99AF8341-8259-4265-BAA6-BD97C600EB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99AF8341-8259-4265-BAA6-BD97C600EB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99AF8341-8259-4265-BAA6-BD97C600EB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99AF8341-8259-4265-BAA6-BD97C600EB33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4D62405-684A-4FDE-87EB-22DC1F66025A} = {CD339CA0-ABFE-4B9A-A392-2454CDF6013D}
+		{99AF8341-8259-4265-BAA6-BD97C600EB33} = {CD339CA0-ABFE-4B9A-A392-2454CDF6013D}
+	EndGlobalSection
+EndGlobal
