@@ -172,6 +172,9 @@ public sealed class InstallRequest
     public string? LoaderVersion { get; set; }
     public string? DisplayName { get; set; }
     public string? ModpackPath { get; set; }
+
+    /// <summary>来自扫描结果的本地实例游戏目录，安装完成后把内容与存档复制进去。</summary>
+    public string? LocalInstancePath { get; set; }
 }
 
 public sealed class InstallProgress

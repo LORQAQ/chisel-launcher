@@ -270,6 +270,66 @@ public sealed class ModpackService
         };
     }
 
+    private static readonly string[] LocalCopyDirs =
+        ["mods", "config", "defaultconfigs", "scripts", "kubejs", "resourcepacks", "shaderpacks", "saves"];
+
+    private static readonly string[] LocalCopyFiles = ["options.txt", "servers.dat"];
+
+    /// <summary>
+    /// 把别的启动器的一个实例搬进新建的实例目录：只带内容与存档，不带日志、缓存和崩溃报告。
+    /// </summary>
+    public async Task CopyLocalAsync(
+        string sourceGameDir,
+        Instance instance,
+        DownloadProgress progress,
+        Action<string, string> report,
+        CancellationToken ct)
+    {
+        if (!Directory.Exists(sourceGameDir)) throw new DirectoryNotFoundException("来源实例目录不存在");
+
+        var gameDir = _paths.GameDir(instance.Id);
+        Directory.CreateDirectory(gameDir);
+        report("正在复制本地实例", "统计文件");
+
+        var files = new List<(string From, long Size)>();
+        foreach (var name in LocalCopyDirs)
+        {
+            var dir = Path.Combine(sourceGameDir, name);
+            if (!Directory.Exists(dir)) continue;
+            foreach (var file in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+            {
+                ct.ThrowIfCancellationRequested();
+                try { files.Add((file, new FileInfo(file).Length)); }
+                catch { }
+            }
+        }
+
+        foreach (var name in LocalCopyFiles)
+        {
+            var file = Path.Combine(sourceGameDir, name);
+            if (File.Exists(file)) files.Add((file, new FileInfo(file).Length));
+        }
+
+        progress.Plan(files.Sum(f => f.Size), files.Count);
+        for (var i = 0; i < files.Count; i++)
+        {
+            ct.ThrowIfCancellationRequested();
+            var (from, size) = files[i];
+            var relative = Path.GetRelativePath(sourceGameDir, from);
+            var destination = SafeUnder(gameDir, relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+
+            await using (var input = new FileStream(from, FileMode.Open, FileAccess.Read, FileShare.Read, 131072, true))
+            await using (var output = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None, 131072, true))
+                await input.CopyToAsync(output, 131072, ct);
+
+            progress.Complete(new DownloadItem { Url = "", Destination = destination, Size = size });
+            if (i % 20 == 0) report("正在复制本地实例", Path.GetFileName(from));
+        }
+
+        report("本地实例已就位", $"{files.Count} 个文件");
+    }
+
     private static (string Loader, string? Version) DetectLoader(Dictionary<string, string> deps)
     {
         if (deps.TryGetValue("fabric-loader", out var fabric)) return ("fabric", fabric);

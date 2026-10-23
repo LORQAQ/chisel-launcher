@@ -50,6 +50,7 @@ public sealed class Bridge
     private readonly ModrinthService _modrinth;
     private readonly CurseForgeService _curseForge;
     private readonly ModpackService _modpacks;
+    private readonly LocalPackScanner _packScanner;
     private readonly LoaderInstallerService _loaderInstaller;
     private readonly AuthlibService _authlib;
     private readonly NewsService _news;
@@ -88,6 +89,7 @@ public sealed class Bridge
         _accounts = new AccountService(paths, _settings, auth, _authlib);
         _curseForge = new CurseForgeService(paths, _settings, _instances);
         _modpacks = new ModpackService(paths, _settings, _curseForge);
+        _packScanner = new LocalPackScanner(paths);
         _loaderInstaller = new LoaderInstallerService(paths, _java);
         _installer = new InstallerService(paths, _settings, _catalog, _instances, _java, _loaderInstaller, _modpacks);
         var resolver = new VersionResolver(paths, _catalog);
@@ -386,6 +388,22 @@ public sealed class Bridge
             }
             case "modpack.inspect":
                 return _modpacks.Inspect(Param<PathQuery>(p).Path);
+            case "modpack.scan":
+                return await Task.Run(() => _packScanner.Scan(null, CancellationToken.None), CancellationToken.None);
+            case "modpack.importLocal":
+            {
+                var request = Param<LocalImportRequest>(p);
+                if (string.IsNullOrWhiteSpace(request.Path) || !Directory.Exists(request.Path))
+                    throw new ArgumentException("要导入的实例目录不存在");
+                return StartInstall(new InstallRequest
+                {
+                    GameVersion = request.GameVersion,
+                    Loader = request.Loader,
+                    LoaderVersion = request.LoaderVersion,
+                    DisplayName = request.Name,
+                    LocalInstancePath = request.Path
+                });
+            }
             case "shader.recommend":
                 return ShaderRecommendation(Param<IdQuery>(p).Id);
             case "shader.install":
@@ -677,6 +695,8 @@ public sealed class Bridge
             var ext = Path.GetExtension(path).ToLowerInvariant();
             if (ext is not ".mrpack" and not ".zip") throw new ArgumentException("只支持 .mrpack 或 .zip 整合包");
         }
+        if (!string.IsNullOrWhiteSpace(request.LocalInstancePath) && !Directory.Exists(request.LocalInstancePath))
+            throw new ArgumentException("要导入的实例目录不存在");
         if (_installCts != null) throw new InvalidOperationException("已经有一个安装任务在进行中。");
 
         var jobId = Guid.NewGuid().ToString("N");
@@ -1386,6 +1406,15 @@ public sealed class Bridge
     private sealed class PathQuery
     {
         public string Path { get; set; } = "";
+    }
+
+    private sealed class LocalImportRequest
+    {
+        public string Path { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string GameVersion { get; set; } = "";
+        public string Loader { get; set; } = "vanilla";
+        public string? LoaderVersion { get; set; }
     }
 
     private sealed class ClipboardQuery

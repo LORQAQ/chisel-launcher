@@ -149,6 +149,26 @@ export interface InstallRequest {
   loaderVersion?: string | null;
   displayName?: string | null;
   modpackPath?: string | null;
+  localInstancePath?: string | null;
+}
+
+export interface LocalPackCandidate {
+  id: string;
+  path: string;
+  kind: string;
+  launcher: string;
+  name: string;
+  gameVersion: string;
+  loader: string;
+  loaderVersion: string | null;
+  modCount: number;
+  sizeBytes: number;
+  hasSaves: boolean;
+}
+
+export interface LocalPackScanResult {
+  candidates: LocalPackCandidate[];
+  roots: string[];
 }
 
 export interface InstallProgress {

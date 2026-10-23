@@ -428,6 +428,12 @@ public sealed class InstallerService
                 await _modpacks.ApplyAsync(request.ModpackPath!, instance, progress,
                     (stage, label) => Report("modpack", stage, label, progress.BytesPerSecond), ct);
             }
+            else if (!string.IsNullOrWhiteSpace(request.LocalInstancePath))
+            {
+                Report("modpack", "正在复制本地实例", "只带内容与存档");
+                await _modpacks.CopyLocalAsync(request.LocalInstancePath!, instance, progress,
+                    (stage, label) => Report("modpack", stage, label, progress.BytesPerSecond), ct);
+            }
 
             _instances.Save(instance);
             Report("done", "准备完成", null, 0, done: true, resultInstanceId: instanceId);

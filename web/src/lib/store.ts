@@ -577,6 +577,7 @@ export async function startInstallation(params: {
   loaderVersion?: string | null;
   displayName?: string | null;
   modpackPath?: string | null;
+  localInstancePath?: string | null;
 }) {
   if (installJob.value?.state === 'running') {
     showToast('已经有安装任务在进行中。', 'warn');

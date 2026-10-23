@@ -1221,6 +1221,29 @@ export function createMock(emit: Emit) {
     },
     'shader.install': (params) => ({ kind: params.kind, job: { requestId: `mock-shader-${Date.now()}` } }),
     'modpack.pick': () => ({ path: null, preview: null }),
+    'modpack.scan': () => ({
+      candidates: [
+        {
+          id: 'p1', path: 'C:/Users/demo/AppData/Roaming/PrismLauncher/instances/TerraFirma/.minecraft',
+          kind: 'prism', launcher: 'Prism Launcher', name: 'TerraFirma 机械工坊',
+          gameVersion: '1.20.1', loader: 'fabric', loaderVersion: '0.15.11',
+          modCount: 184, sizeBytes: 1_284_000_000, hasSaves: true
+        },
+        {
+          id: 'p2', path: 'C:/Users/demo/AppData/Roaming/.minecraft/versions/1.20.1-Forge',
+          kind: 'minecraft', launcher: '官方启动器 / PCL', name: '1.20.1-Forge',
+          gameVersion: '1.20.1', loader: 'forge', loaderVersion: '47.2.0',
+          modCount: 62, sizeBytes: 412_000_000, hasSaves: false
+        },
+        {
+          id: 'p3', path: 'C:/Users/demo/Downloads/Cobblemon.mrpack',
+          kind: 'archive', launcher: 'Modrinth 整合包', name: 'Cobblemon',
+          gameVersion: '', loader: 'vanilla', loaderVersion: null,
+          modCount: 0, sizeBytes: 86_000_000, hasSaves: false
+        }
+      ],
+      roots: ['PrismLauncher/instances', '.minecraft/versions', 'Downloads']
+    }),
     'curseforge.installLink': () => { throw new Error('浏览器预览不能导入 CurseForge 项目'); },
     'modrinth.search': (params) => {
       const instance = findCard(params.instanceId);
